@@ -125,6 +125,7 @@ class SoundMenu(ui.Scene):
 
 	def play_sound(self, btn, mbtn):
 		#GPIO.output(17, False)
+		ui.show_notification('%s Played.' % btn.text)
 		logger.info(btn.text)
 
 	def back_btn_clicked(self, btn, mbtn):
