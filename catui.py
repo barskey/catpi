@@ -1,23 +1,29 @@
 import pygame
 import os
+import time
+import resource
 import pygameui as ui
 import logging
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import gameboards
 
+# maps the schematic pins(J2 11-16) to GPIO pins
 PINS = {
-	22: '11',
-	23: '12',
-	27: '13',
-	17: '14',
-	18: '15',
-	4: '16'
+	'11': 22,
+	'12': 23,
+	'13': 27,
+	'14': 17,
+	'15': 18,
+	'16': 4
 }
 
+# time to delay after setting bits
+DELAY = 0.001 # 0.001s = 1ms = 1KHz
+
 #Setup the GPIOs as outputs - only 4 and 17 are available
-GPIO.setmode(GPIO.BCM)
-for gpio_port in PINS.keys():
-	GPIO.setup(gpio_port, GPIO.OUT)
+#GPIO.setmode(GPIO.BCM)
+#for pin, gpio_port in PINS.items():
+#	GPIO.setup(gpio_port, GPIO.OUT)
 
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
@@ -47,7 +53,7 @@ class MainMenu(ui.Scene):
 		self.add_child(image_view)
 
 		title_rect = ui.Rect(0, 0, LCD_WIDTH, 60)
-		title = ui.Label(title_rect, 'Cinematronics Audio Tester')
+		title = ui.Label(title_rect, 'Select A Sound Board:')
 		self.add_child(title)
 
 		btn_w = 130
@@ -69,8 +75,7 @@ class MainMenu(ui.Scene):
 
 	def game_btn_clicked(self, btn, mbtn):
 		sm = SoundMenu()
-		sm.selected_game = btn.text
-		sm.set_contents()
+		sm.set_contents(btn.text)
 		ui.scene.pop()
 		ui.scene.push(sm)
 
@@ -79,14 +84,14 @@ class SoundMenu(ui.Scene):
 	def __init__(self):
 		ui.Scene.__init__(self)
 
-		self.selected_game = ''
-
 		image_view = ui.view_for_image_named('bg', True)
 		image_view.frame.right = LCD_WIDTH
 		image_view.frame.top = 0
 		self.add_child(image_view)
 
-	def set_contents(self):
+	def set_contents(self, selected_game):
+		self.selected_game = selected_game
+		
 		title_rect = ui.Rect(0, 0, LCD_WIDTH, 40)
 		title = ui.Label(title_rect, 'Activate Sound for ' + self.selected_game + ':')
 		self.add_child(title)
@@ -94,9 +99,11 @@ class SoundMenu(ui.Scene):
 		btn_w = 130
 		btn_h = 40
 		space = 15
+
 		btn = ui.Button(ui.Rect(space + 15, 55, btn_w, btn_h), 'Init')
 		btn.on_clicked.connect(self.init_board)
 		self.add_child(btn)
+
 		row = 0
 		col = 1
 		for sound in GameBoard.Boards[self.selected_game]['sounds']:
@@ -120,13 +127,30 @@ class SoundMenu(ui.Scene):
 		self.add_child(adv_btn)
 
 	def init_board(self, btn, mbtn):
-		ui.show_alert(title = 'Board Initialized', message = '%s Initialized.' % self.selected_game)
+		ui.show_notification('%s Initialized' % self.selected_game)
+		init_pins = GameBoard.Boards[self.selected_game]['init']
+		i = 0
+		while i < init_pins['len']:
+			for pin, bits in init_pins.items():
+				if pin != 'len':
+					#GPIO.output(PINS[pin], bool(int(bits[i])))
+					logger.info('Set pin ' + pin + str(bool(int(bits[i]))))
+					time.sleep(DELAY)
+			i += 1
 		logger.info('Initialize clicked')
 
 	def play_sound(self, btn, mbtn):
 		#GPIO.output(17, False)
-		ui.show_notification('%s Played.' % btn.text)
-		logger.info(btn.text)
+		ui.show_notification('%s Activated' % btn.text)
+		act_pins = GameBoard.Boards[self.selected_game]['sounds'][btn.text]
+		i = 0
+		while i < act_pins['len']:
+			for pin, bits in act_pins.items():
+				if pin != 'len':
+					#GPIO.output(PINS[pin], bool(bits[i]))
+					logger.info('Set pin ' + pin + str(bool(int(bits[i]))))
+			i += 1
+				
 
 	def back_btn_clicked(self, btn, mbtn):
 		ui.scene.pop()
@@ -134,8 +158,7 @@ class SoundMenu(ui.Scene):
 
 	def adv_btn_clicked(self, btn, mbtn):
 		am = AdvMenu()
-		am.selected_game = self.selected_game
-		am.set_contents()
+		am.set_contents(self.selected_game)
 		ui.scene.pop()
 		ui.scene.push(am)
 
@@ -143,8 +166,6 @@ class AdvMenu(ui.Scene):
 
 	def __init__(self):
 		ui.Scene.__init__(self)
-
-		self.selected_game = ''
 
 		image_view = ui.view_for_image_named('bg', True)
 		image_view.frame.right = LCD_WIDTH
@@ -155,7 +176,8 @@ class AdvMenu(ui.Scene):
 		title = ui.Label(title_rect, 'Toggle/Pulse pins directly:')
 		self.add_child(title)
 
-	def set_contents(self):
+	def set_contents(self, selected_game):
+		self.selected_game = selected_game
 
 		btn_w = 60
 		btn_h = 40
@@ -209,15 +231,38 @@ class AdvMenu(ui.Scene):
 
 	def adv_btn_clicked(self, btn, mbtn):
 		sm = SoundMenu()
-		sm.selected_game = self.selected_game
-		sm.set_contents()
+		sm.set_contents(self.selected_game)
 		ui.scene.pop()
 		ui.scene.push(sm)
 
 if __name__ == '__main__':
+	clear_color = (0, 0, 0, 0)
+	title_color = (85, 128, 255)
+	yellow_color = (255, 255, 0)
+	shadow_color = (100, 100, 100)
+	shadow_offset = (2, 2)
+	button_bg = (128, 128, 128, 200)
+	button_text = (200, 200, 200)
+	title_font_size = 24
 
 	ui.init('Cinematronics Audio Tester', (LCD_WIDTH, LCD_HEIGHT))
 	pygame.mouse.set_visible(False)
+		
+	ui.theme.current.set(class_name='Label', state='normal', key='background_color', value=clear_color)
+	ui.theme.current.set(class_name='Label', state='normal', key='text_color', value=title_color)
+	ui.theme.current.set(class_name='Label', state='normal', key='text_shadow_color', value=shadow_color)
+	ui.theme.current.set(class_name='Label', state='normal', key='text_shadow_offset', value=shadow_offset)
+	ui.theme.current.set(class_name='Label', state='normal', key='font', value=resource.get_font(title_font_size, True))
+
+	ui.theme.current.set(class_name='Button', state='normal', key='background_color', value=button_bg)
+	ui.theme.current.set(class_name='Button', state='normal', key='text_color', value=button_text)
+	ui.theme.current.set(class_name='Button', state='normal', key='text_shadow_color', value=None)
+	ui.theme.current.set(class_name='Button', state='normal', key='text_shadow_offset', value=None)
+
+	ui.theme.current.set(class_name='NotificationView', state='normal', key='font', value=resource.get_font(8, False))
+	ui.theme.current.set(class_name='NotificationView', state='normal', key='text_color', value=shadow_color)
+	ui.theme.current.set(class_name='NotificationView', state='normal', key='background_color', value=((190, 200, 255), (100, 100, 100)))
+	ui.theme.current.set(class_name='NotificationView', state='normal', key='border_color', value=shadow_color)
 
 	ui.scene.push(MainMenu())
 

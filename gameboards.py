@@ -1,23 +1,32 @@
 #// Armor Attack
-AAInit = [
-	{'pin11': [False, True, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False]},
-	{'pin12': [False, False, True, False, True, False, True, False, False, True, False, True, False, True, False, False, False]},
-	{'pin13': [False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]},
-	{'pin14': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]},
-	{'pin15': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]},
-	{'pin16': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]}
-]
-
-AASounds = [
-	[ 'Tank En.',    'ACT_TGL', 0, 'ST_OUT', 0x0001, 0x0001, 1],
-	[ 'Beep En.',    'ACT_TGL', 0, 'ST_OUT', 0x0001, 0x0001, 2],
-	[ 'Chopper En.', 'ACT_TGL', 0, 'ST_OUT', 0x0001, 0x0001, 3],
-	[ 'Tank Fire',      'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 7],
-	[ 'Hi Explosion',   'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 6],
-	[ 'Jeep Fire',      'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 5],
-	[ 'Lo Explosion',   'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 4],
-	[ 'Tank Speed',     'ACT_SET', 0, 'ST_AAS', 0x000F, 0x0000, 0]
-]
+AAInit = {'len': 17,
+	'11': '01111111000000000',
+	'12': '00101010010101000',
+	'13': '00000000000000100',
+	'14': '11111111111111111',
+	'15': '11111111111111111',
+	'16': '11111111111111111'
+}
+AASounds = {
+	'Tank En.': {'len': 8,
+		'11': '01010101',
+		'12': '10101010',
+		'13': '01010101'
+	},
+	'Been En.': {'len': 1,
+		'15': '0'
+	}
+}
+#AASounds = [
+#	[ 'Tank En.',    'ACT_TGL', 0, 'ST_OUT', 0x0001, 0x0001, 1],
+#	[ 'Beep En.',    'ACT_TGL', 0, 'ST_OUT', 0x0001, 0x0001, 2],
+#	[ 'Chopper En.', 'ACT_TGL', 0, 'ST_OUT', 0x0001, 0x0001, 3],
+#	[ 'Tank Fire',      'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 7],
+#	[ 'Hi Explosion',   'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 6],
+#	[ 'Jeep Fire',      'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 5],
+#	[ 'Lo Explosion',   'ACT_PLS', 1, 'ST_AAS', 0x0001, 0x0001, 4],
+#	[ 'Tank Speed',     'ACT_SET', 0, 'ST_AAS', 0x000F, 0x0000, 0]
+#]
 
 ROSounds = [
 	[ 'Explsn',         'ACT_PLS', 0, 'ST_OUT', 0x0001, 0x0001, 7],
@@ -120,14 +129,6 @@ GameBoards = {
 class GameBoard():
 
 	def __init__(self):
-		self.AASounds = AASounds
-		self.ROSounds = ROSounds
-		self.SQSounds = SQSounds
-		self.SWSounds = SWSounds
-		self.SCSounds = SCSounds
-		self.SHSounds = SHSounds
-		self.SDSounds = SDSounds
-		self.TGSounds = TGSounds
 		
 		self.Boards = GameBoards
 		
