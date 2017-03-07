@@ -6,19 +6,19 @@ import RPi.GPIO as GPIO
 import gameboards
 
 PINS = {
-	'11': 11,
-	'12': 12,
-	'13': 13,
-	'14': 14,
-	'15': 15,
-	'16': 16
+	11: '11',
+	12: '12',
+	13: '13',
+	14: '14',
+	15: '15',
+	16: '16'
 }
 
 #Setup the GPIOs as outputs - only 4 and 17 are available
 GPIO.setmode(GPIO.BCM)
-for gpio_port in PINS.items:
+for gpio_port in PINS.keys():
 	GPIO.setup(gpio_port, GPIO.OUT)
- 
+
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter(log_format))
