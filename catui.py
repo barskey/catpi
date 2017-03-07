@@ -115,7 +115,7 @@ class SoundMenu(ui.Scene):
 		back_btn.on_clicked.connect(self.back_btn_clicked)
 		self.add_child(back_btn)
 
-		adv_btn = ui.Button(ui.Rect(LCD_WIDTH - btn_w, LCD_HEIGHT - btn_h, btn_w, btn_h), 'Avanced >')
+		adv_btn = ui.Button(ui.Rect(LCD_WIDTH - btn_w, LCD_HEIGHT - btn_h, btn_w, btn_h), 'Advanced >')
 		adv_btn.on_clicked.connect(self.adv_btn_clicked)
 		self.add_child(adv_btn)
 
