@@ -120,6 +120,7 @@ class SoundMenu(ui.Scene):
 		self.add_child(adv_btn)
 
 	def init_board(self, btn, mbtn):
+		ui.show_alert(title = 'Board Initialized', message = '%s Initialized.' % self.selected_game)
 		logger.info('Initialize clicked')
 
 	def play_sound(self, btn, mbtn):
