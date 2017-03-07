@@ -41,14 +41,14 @@ class MainMenu(ui.Scene):
 	def __init__(self):
 		ui.Scene.__init__(self)
 
-		self.image_view = ui.view_for_image_named('bg', True)
-		self.image_view.frame.right = LCD_WIDTH
-		self.image_view.frame.top = 0
-		self.add_child(self.image_view)
+		image_view = ui.view_for_image_named('bg', True)
+		image_view.frame.right = LCD_WIDTH
+		image_view.frame.top = 0
+		self.add_child(image_view)
 
-		self.title_rect = ui.Rect(0, 0, LCD_WIDTH, 60)
-		self.title = ui.Label(self.title_rect, 'Cinematronics Audio Tester')
-		self.add_child(self.title)
+		title_rect = ui.Rect(0, 0, LCD_WIDTH, 60)
+		title = ui.Label([0, 0, LCD_WIDTH, 60], 'Cinematronics Audio Tester')
+		self.add_child(title)
 
 		btn_w = 130
 		btn_h = 50
@@ -81,15 +81,15 @@ class SoundMenu(ui.Scene):
 
 		self.selected_game = ''
 
-		self.image_view = ui.view_for_image_named('bg', True)
-		self.image_view.frame.right = LCD_WIDTH
-		self.image_view.frame.top = 0
-		self.add_child(self.image_view)
+		image_view = ui.view_for_image_named('bg', True)
+		image_view.frame.right = LCD_WIDTH
+		image_view.frame.top = 0
+		self.add_child(image_view)
 
 	def set_contents(self):
-		self.title_rect = ui.Rect(0, 0, LCD_WIDTH, 40)
-		self.title = ui.Label(self.title_rect, 'Activate Sound for ' + self.selected_game + ':')
-		self.add_child(self.title)
+		title_rect = ui.Rect(0, 0, LCD_WIDTH, 40)
+		title = ui.Label(title_rect, 'Activate Sound for ' + self.selected_game + ':')
+		self.add_child(title)
 
 		btn_w = 130
 		btn_h = 40
@@ -144,14 +144,14 @@ class AdvMenu(ui.Scene):
 
 		self.selected_game = ''
 
-		self.image_view = ui.view_for_image_named('bg', True)
-		self.image_view.frame.right = LCD_WIDTH
-		self.image_view.frame.top = 0
-		self.add_child(self.image_view)
+		image_view = ui.view_for_image_named('bg', True)
+		image_view.frame.right = LCD_WIDTH
+		image_view.frame.top = 0
+		self.add_child(image_view)
 
-		self.title_rect = ui.Rect(0, 0, LCD_WIDTH, 40)
-		self.title = ui.Label(self.title_rect, 'Toggle/Pulse pins directly:')
-		self.add_child(self.title)
+		title_rect = ui.Rect(0, 0, LCD_WIDTH, 40)
+		title = ui.Label(title_rect, 'Toggle/Pulse pins directly:')
+		self.add_child(title)
 
 	def set_contents(self):
 
