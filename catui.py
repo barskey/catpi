@@ -6,12 +6,12 @@ import RPi.GPIO as GPIO
 import gameboards
 
 PINS = {
-	11: '11',
-	12: '12',
-	13: '13',
-	14: '14',
-	15: '15',
-	16: '16'
+	22: '11',
+	23: '12',
+	27: '13',
+	17: '14',
+	18: '15',
+	4: '16'
 }
 
 #Setup the GPIOs as outputs - only 4 and 17 are available
