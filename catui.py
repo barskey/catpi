@@ -18,7 +18,7 @@ PINS = {
 GPIO.setmode(GPIO.BCM)
 for gpio_port in PINS.keys():
 	GPIO.setup(gpio_port, GPIO.OUT)
- 
+
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter(log_format))
