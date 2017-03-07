@@ -47,7 +47,7 @@ class MainMenu(ui.Scene):
 		self.add_child(image_view)
 
 		title_rect = ui.Rect(0, 0, LCD_WIDTH, 60)
-		title = ui.Label([0, 0, LCD_WIDTH, 60], 'Cinematronics Audio Tester')
+		title = ui.Label(title_rect, 'Cinematronics Audio Tester')
 		self.add_child(title)
 
 		btn_w = 130
