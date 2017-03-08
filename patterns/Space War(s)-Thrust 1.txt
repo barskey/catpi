@@ -1,0 +1,10 @@
+{signal: [
+["Thrust 1",
+  {name: "pin11", wave: "xl"},
+  {name: "pin12", wave: "xl"},
+  {name: "pin13", wave: "xl"},
+  {name: "pin14", wave: "xh"},
+  {name: "pin15", wave: "xh"},
+  {name: "pin16", wave: "xh"}
+]
+]}

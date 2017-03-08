@@ -1,0 +1,10 @@
+{signal: [
+["Fire",
+  {name: "pin11", wave: "xl|l"},
+  {name: "pin12", wave: "xh|l"},
+  {name: "pin13", wave: "xh|h"},
+  {name: "pin14", wave: "xh|h"},
+  {name: "pin15", wave: "xh|h"},
+  {name: "pin16", wave: "xh|h"}
+]
+]}

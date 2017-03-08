@@ -1,0 +1,10 @@
+{signal: [
+["Background Enable",
+  {name: "pin11", wave: "xh.....l..h.........."},
+  {name: "pin12", wave: "xlhl.hl.hl.hl.hl.hl.."},
+  {name: "pin13", wave: "xl.................hl"},
+  {name: "pin14", wave: "xh..................."},
+  {name: "pin15", wave: "xh..................."},
+  {name: "pin16", wave: "xh..................."}
+]
+]}

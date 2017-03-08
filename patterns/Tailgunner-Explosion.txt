@@ -1,0 +1,10 @@
+{signal: [
+["Explosion",
+  {name: "pin11", wave: "xl....."},
+  {name: "pin12", wave: "xl....."},
+  {name: "pin13", wave: "xl....."},
+  {name: "pin14", wave: "xl..h.."},
+  {name: "pin15", wave: "xhlh.lh"},
+  {name: "pin16", wave: "xh....."}
+]
+]}

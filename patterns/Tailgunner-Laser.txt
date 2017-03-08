@@ -1,0 +1,10 @@
+{signal: [
+["Laser",
+  {name: "pin11", wave: "xl..|l..|l..|l..|l..|||||l.."},
+  {name: "pin12", wave: "xl..|l..|l..|l..|l..|||||l.."},
+  {name: "pin13", wave: "xl..|l..|l..|l..|l..|||||l.."},
+  {name: "pin14", wave: "xl..|h..|l..|h..|l..|||||h.."},
+  {name: "pin15", wave: "xhlh|hlh|hlh|hlh|hlh|||||hlh"},
+  {name: "pin16", wave: "xh..|h..|h..|h..|h..|||||h.."}
+]
+]}

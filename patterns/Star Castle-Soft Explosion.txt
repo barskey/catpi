@@ -1,0 +1,10 @@
+{signal: [
+["Soft Explosion",
+  {name: "pin11", wave: "xl|l"},
+  {name: "pin12", wave: "xh|h"},
+  {name: "pin13", wave: "xl|h"},
+  {name: "pin14", wave: "xh|h"},
+  {name: "pin15", wave: "xl|l"},
+  {name: "pin16", wave: "xh|h"}
+]
+]}

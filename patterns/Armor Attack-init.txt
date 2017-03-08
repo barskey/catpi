@@ -1,0 +1,10 @@
+{signal: [
+["Initialize",
+  {name: "pin11", wave: "xl........................hl"},
+  {name: "pin12", wave: "xh.........................."},
+  {name: "pin13", wave: "xh.........................."},
+  {name: "pin14", wave: "xh.........................."},
+  {name: "pin15", wave: "xl.hl.hl.hl.hl.hl.hl.hl.hl.."},
+  {name: "pin16", wave: "xl............h............."}
+]
+]}

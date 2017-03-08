@@ -1,0 +1,10 @@
+{signal: [
+["Ping 1",
+  {name: "pin11", wave: "xh|h"},
+  {name: "pin12", wave: "xh|h"},
+  {name: "pin13", wave: "xh|h"},
+  {name: "pin14", wave: "xl|h"},
+  {name: "pin15", wave: "xh|h"},
+  {name: "pin16", wave: "xh|h"}
+]
+]}

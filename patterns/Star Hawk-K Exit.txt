@@ -1,0 +1,10 @@
+{signal: [
+["K Exit",
+  {name: "pin11", wave: "xl"},
+  {name: "pin12", wave: "xl"},
+  {name: "pin13", wave: "xh"},
+  {name: "pin14", wave: "xl"},
+  {name: "pin15", wave: "xl"},
+  {name: "pin16", wave: "xh"}
+]
+]}
