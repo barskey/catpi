@@ -142,15 +142,20 @@ class SoundMenu(ui.Scene):
 	def play_sound(self, btn, mbtn):
 		#GPIO.output(17, False)
 		ui.show_notification('%s Activated' % btn.text)
-		act_pins = GameBoard.Boards[self.selected_game]['sounds'][btn.text]
-		i = 0
-		while i < act_pins['len']:
-			for pin, bits in act_pins.items():
-				if pin != 'len':
-					#GPIO.output(PINS[pin], bool(bits[i]))
-					logger.info('Set pin ' + pin + str(bool(int(bits[i]))))
-			i += 1
-
+		for soundname, data in GameBoard.Boards[btn.text].items():
+			register = 0 # create register for keeping track of which bits are latched for this sound
+			if data['type'] == 'set':
+				#GPIO.output(PINS[data['pin']], data['active'])
+				print 'set'
+			elif data['type'] == 'clk':
+				print 'clk'
+				bits = data['pin'] # get the bits needed for this sound
+				if data['active']: # if this sound is active high (True)
+					register |= bits # bitwise OR with register
+				elif not ['active'] # if this sound is active low (False)
+					bits = ~bits # invert this sound and
+					register &= bits # bitwise AND with register
+				print '{0:b}'.format(register)
 
 	def back_btn_clicked(self, btn, mbtn):
 		ui.scene.pop()
