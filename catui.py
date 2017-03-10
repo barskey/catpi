@@ -128,34 +128,80 @@ class SoundMenu(ui.Scene):
 
 	def init_board(self, btn, mbtn):
 		ui.show_notification('%s Initialized' % self.selected_game)
-		init_pins = GameBoard.Boards[self.selected_game]['init']
-		i = 0
-		while i < init_pins['len']:
-			for pin, bits in init_pins.items():
-				if pin != 'len':
-					#GPIO.output(PINS[pin], bool(int(bits[i])))
-					logger.info('Set pin ' + pin + str(bool(int(bits[i]))))
-					time.sleep(DELAY)
-			i += 1
-		logger.info('Initialize clicked')
+
+		latch_pin = GameBoard.Boards[self.selected_game]['latchpin']
+		clk_pin = GameBoard.Boards[self.selected_game]['clkpin']
+		data_pin = GameBoard.Boards[self.selected_game]['datapin']
+
+		# loop thru all sounds and set each one that is not clocked
+		for name, data in GameBoard.Boards[self.selected_game]['sounds'].items():
+			if data['type'] == 'set':
+				#GPIO.output(PINS[data['pin']], not data['active'])
+				print 'GPIO.output(PINS[%s])' % data['pin'], not data['active']
+		
+		# build off register for remaining sounds
+		register = self.build_reg_off(GameBoard.Boards[self.selected_game]['sounds'])
+		self.send_clk_bits(register, latch_pin, clk_pin, data_pin)
 
 	def play_sound(self, btn, mbtn):
-		#GPIO.output(17, False)
-		ui.show_notification('%s Activated' % btn.text)
-		for soundname, data in GameBoard.Boards[btn.text].items():
-			register = 0 # create register for keeping track of which bits are latched for this sound
-			if data['type'] == 'set':
-				#GPIO.output(PINS[data['pin']], data['active'])
-				print 'set'
-			elif data['type'] == 'clk':
-				print 'clk'
-				bits = data['pin'] # get the bits needed for this sound
-				if data['active']: # if this sound is active high (True)
+		soundname = btn.text
+		ui.show_notification('%s Activated' % soundname)
+		sound = GameBoard.Boards[self.selected_game]['sounds'][soundname]
+		
+		latch_pin = GameBoard.Boards[self.selected_game]['latchpin']
+		clk_pin = GameBoard.Boards[self.selected_game]['clkpin']
+		data_pin = GameBoard.Boards[self.selected_game]['datapin']
+		
+		soundtype = sound['type']
+		if soundtype == 'set': # if sound type is set, only need to set single bit
+			#GPIO.output(PINS[sound['pin']], sound['active'])
+			print 'GPIO.output(PINS[%s])' % sound['pin'], sound['active']
+		else: # else, need to loop through all clocked sounds and make register to load all at once
+			register = self.build_reg_off(GameBoard.Boards[self.selected_game]['sounds'])
+			print 'Current register:', '{0:b}'.format(register)
+			if sound['active']: # if this sound is active high (True)
+				register |= sound['pin'] # set this sound to 1 to play
+			else:
+				register &= ~sound['pin'] # else set it to 0 to play
+			print soundname, '{0:b}'.format(register)
+			self.send_clk_bits(register, latch_pin, clk_pin, data_pin)
+	
+	# Builds a register setting each bit to off as appropriate considering its active state
+	def build_reg_off(self, sounds):
+		register = 0
+		for name, data in sounds.items(): # iterate through each sound
+			if data['type'] == 'clk': # only need to look at sounds that are clocked
+				bits = data['pin'] # get the bits for this sound
+				if not data['active']: # if this sound is active low (False), set this bit to 1 to turn it off
 					register |= bits # bitwise OR with register
-				elif not ['active'] # if this sound is active low (False)
-					bits = ~bits # invert this sound and
-					register &= bits # bitwise AND with register
-				print '{0:b}'.format(register)
+				print name, '{0:b}'.format(register)
+		
+		return register
+		
+	# for each bit in register this sets data pin and sends clk pulse, then sends latch at end
+	def send_clk_bits(self, register, latch_pin, clk_pin, data_pin):
+		# set pins to False to start
+		#GPIO.output(PINS[latch_pin], False)
+		#GPIO.output(PINS[data_pin], False)
+		#GPIO.output(PINS[clk_pin], False) if self.selected_game != 'Tailgunner' else True
+		
+		# need to send bits in reverse order
+		# TODO need to change 8 to variable size register
+		reg_str = '{0:08b}'.format(register)  # store register as string to reverse it
+		for bit in reg_str[::-1]: # for each bit in reverse order
+			#GPIO.output(PINS[data_pin], bool(int(bit))) # set data pin to this bit
+			self.send_pulse(clk_pin) # pulse the clk pin
+		
+		if latch_pin:
+			self.send_pulse(latch_pin) # latch the register (only if latch_pin is set, e.g. tailgunner has no latch)
+			
+	def send_pulse(self, pin):
+		#GPIO.output(PINS[pin], True if self.selected_game != 'Tailgunner' else False)
+		print PINS[pin], True if self.selected_game != 'Tailgunner' else False
+		time.sleep(DELAY)
+		#GPIO.output(PINS[pin], False if self.selected_game != 'Tailgunner' else True)
+		time.sleep(DELAY)
+		print PINS[pin], False if self.selected_game != 'Tailgunner' else True
 
 	def back_btn_clicked(self, btn, mbtn):
 		ui.scene.pop()
@@ -168,6 +214,7 @@ class SoundMenu(ui.Scene):
 		ui.scene.push(am)
 
 class AdvMenu(ui.Scene):
+	toggle_state = {'11': False, '12': False, '13': False, '14': False, '15': False, '16': False}
 
 	def __init__(self):
 		ui.Scene.__init__(self)
@@ -218,16 +265,25 @@ class AdvMenu(ui.Scene):
 		adv_btn = ui.Button(ui.Rect(LCD_WIDTH - btn_w * 2, LCD_HEIGHT - btn_h, btn_w * 2, btn_h), '< Easy')
 		adv_btn.on_clicked.connect(self.adv_btn_clicked)
 		self.add_child(adv_btn)
-
-	def init_board(self, btn, mbtn):
-		logger.info('Initialize clicked')
+		
+		# set all pins to off (False)
+		for pin, state in self.toggle_state.items():
+			#GPIO.output(PINS[pin], state)
+			pass
 
 	def tgl_btn_clicked(self, btn, mbtn):
-		#GPIO.output(17, False)
+		pin = btn.text
+		new_state = not self.toggle_state[pin]
+		#GPIO.output(PINS[pin], new_state)
+		self.toggle_state[pin] = new_state
 		logger.info('Toggle:' + btn.text)
 
 	def pls_btn_clicked(self, btn, mbtn):
-		#GPIO.output(17, False)
+		pin = btn.text
+		#GPIO.output(PINS[pin], True if self.selected_game != 'Tailgunner' else False)
+		time.sleep(DELAY)
+		#GPIO.output(PINS[pin], False if self.selected_game != 'Tailgunner' else True)
+		time.sleep(DELAY)
 		logger.info('Pulse:' + btn.text)
 
 	def back_btn_clicked(self, btn, mbtn):

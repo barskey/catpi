@@ -89,7 +89,7 @@ SCSounds = {
 	'Loud Explsn':   {'type': 'set', 'active': False, 'pin': '12'}, # TODO Should be pulse?
 	'Soft Explsn':   {'type': 'set', 'active': False, 'pin': '13'}, # TODO Should be pulse?
 	'Laser En.':     {'type': 'set', 'active': False, 'pin': '14'},
-	'Fire Ball En.': {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b10000000},
+	'Fireball En.':  {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b10000000},
 	'Shield En.':    {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b01000000},
 	'Star En.':      {'type': 'clk', 'reg': 1,  'active': True,  'pin': 0b00100000},
 	'Thrust En.':    {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b00010000},
@@ -160,14 +160,14 @@ TGSounds = {
 #]
 
 GameBoards = {
-	'Armor Attack': {'sounds': AASounds, 'init': AAInit},
-	'Rip Off': {'sounds': ROSounds, 'init': AAInit},
-	'Solar Quest': {'sounds': SQSounds, 'init': AAInit},
-	'Space Wars': {'sounds': SWSounds, 'init': AAInit},
-	'Star Castle': {'sounds': SCSounds, 'init': AAInit},
-	'Star Hawk': {'sounds': SHSounds, 'init': AAInit},
-	'Sundance': {'sounds': SDSounds, 'init': AAInit},
-	'Tailgunner': {'sounds': TGSounds, 'init': AAInit} # TODO pins 11, 12, 13 -> low, 16 -> high
+	'Armor Attack': {'sounds': AASounds, 'latchpin': '11', 'clkpin': '15', 'datapin': '16'},
+	'Rip Off':      {'sounds': ROSounds, 'latchpin': '13', 'clkpin': '12', 'datapin': '11'},
+	'Solar Quest':  {'sounds': SQSounds, 'latchpin': '12', 'clkpin': '15', 'datapin': '16'},
+	'Space Wars':   {'sounds': SWSounds, 'latchpin': None, 'clkpin': None, 'datapin': None},
+	'Star Castle':  {'sounds': SCSounds, 'latchpin': '11', 'clkpin': '15', 'datapin': '16'},
+	'Star Hawk':    {'sounds': SHSounds, 'latchpin': None, 'clkpin': None, 'datapin': None},
+	'Sundance':     {'sounds': SDSounds, 'latchpin': None, 'clkpin': None, 'datapin': None},
+	'Tailgunner':   {'sounds': TGSounds, 'latchpin': None, 'clkpin': '15', 'datapin': '14'}
 }
 
 class GameBoard():
