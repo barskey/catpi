@@ -91,7 +91,7 @@ class SoundMenu(ui.Scene):
 
 	def set_contents(self, selected_game):
 		self.selected_game = selected_game
-		
+
 		title_rect = ui.Rect(0, 0, LCD_WIDTH, 40)
 		title = ui.Label(title_rect, 'Activate Sound for ' + self.selected_game + ':')
 		self.add_child(title)
@@ -109,7 +109,7 @@ class SoundMenu(ui.Scene):
 		for sound in GameBoard.Boards[self.selected_game]['sounds']:
 			x = space + 15 + col * (btn_w + space)
 			y = 55 + row * (btn_h + space)
-			btn = ui.Button(ui.Rect(x, y, btn_w, btn_h), sound[0])
+			btn = ui.Button(ui.Rect(x, y, btn_w, btn_h), sound)
 			btn.on_clicked.connect(self.play_sound)
 			self.add_child(btn)
 			if col < MAXCOLS - 1:
@@ -150,7 +150,7 @@ class SoundMenu(ui.Scene):
 					#GPIO.output(PINS[pin], bool(bits[i]))
 					logger.info('Set pin ' + pin + str(bool(int(bits[i]))))
 			i += 1
-				
+
 
 	def back_btn_clicked(self, btn, mbtn):
 		ui.scene.pop()
@@ -247,7 +247,7 @@ if __name__ == '__main__':
 
 	ui.init('Cinematronics Audio Tester', (LCD_WIDTH, LCD_HEIGHT))
 	pygame.mouse.set_visible(False)
-		
+
 	ui.theme.current.set(class_name='Label', state='normal', key='background_color', value=clear_color)
 	ui.theme.current.set(class_name='Label', state='normal', key='text_color', value=title_color)
 	ui.theme.current.set(class_name='Label', state='normal', key='text_shadow_color', value=shadow_color)
