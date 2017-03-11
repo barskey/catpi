@@ -244,7 +244,6 @@ class AdvMenu(ui.Scene):
 		self.btn11.on_clicked.connect(self.tgl_btn_clicked)
 		self.add_child(self.btn11)
 		self.btn12 = ui.Button(ui.Rect(xvals[1], yval, btn_w, btn_h), '12')
-		self.btn12.state = 'selected'
 		self.btn12.on_clicked.connect(self.tgl_btn_clicked)
 		self.add_child(self.btn12)
 		self.btn13 = ui.Button(ui.Rect(xvals[2], yval, btn_w, btn_h), '13')
@@ -289,10 +288,12 @@ class AdvMenu(ui.Scene):
 		btns = {'11': self.btn11, '12': self.btn12, '13': self.btn13, '14': self.btn14, '15': self.btn15, '16': self.btn16}
 		pin = btn.text
 		new_state = not self.toggle_state[pin]
+		if new_state:
+			btns[pin].state = 'selected'
+		else:
+			btns[pin].state = 'normal'
 		#GPIO.output(PINS[pin], new_state)
 		self.toggle_state[pin] = new_state
-		btns[pin].state = 'selected'
-		btns[pin].stylize()
 		logger.info('Toggle:' + btn.text)
 
 	def pls_btn_clicked(self, btn, mbtn):
@@ -317,6 +318,7 @@ if __name__ == '__main__':
 	clear_color = (0, 0, 0, 0)
 	title_color = (85, 128, 255)
 	yellow_color = (255, 255, 0)
+	lt_yellow_color = (227, 227, 159)
 	shadow_color = (100, 100, 100)
 	shadow_offset = (2, 2)
 	button_bg = (128, 128, 128, 200)
@@ -336,7 +338,7 @@ if __name__ == '__main__':
 	ui.theme.current.set(class_name='Button', state='normal', key='text_color', value=button_text)
 	ui.theme.current.set(class_name='Button', state='normal', key='text_shadow_color', value=None)
 	ui.theme.current.set(class_name='Button', state='normal', key='text_shadow_offset', value=None)
-	ui.theme.current.set(class_name='Button', state='selected', key='background_color', value=yellow_color)
+	ui.theme.current.set(class_name='Button', state='selected', key='background_color', value=lt_yellow_color)
 
 	ui.theme.current.set(class_name='NotificationView', state='normal', key='font', value=resource.get_font(8, False))
 	ui.theme.current.set(class_name='NotificationView', state='normal', key='text_color', value=shadow_color)
