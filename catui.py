@@ -336,6 +336,7 @@ if __name__ == '__main__':
 	ui.theme.current.set(class_name='Button', state='normal', key='text_color', value=button_text)
 	ui.theme.current.set(class_name='Button', state='normal', key='text_shadow_color', value=None)
 	ui.theme.current.set(class_name='Button', state='normal', key='text_shadow_offset', value=None)
+	ui.theme.current.set(class_name='Button', state='selecteds', key='background_color', value=yellow_color)
 
 	ui.theme.current.set(class_name='NotificationView', state='normal', key='font', value=resource.get_font(8, False))
 	ui.theme.current.set(class_name='NotificationView', state='normal', key='text_color', value=shadow_color)
