@@ -244,6 +244,7 @@ class AdvMenu(ui.Scene):
 		self.btn11.on_clicked.connect(self.tgl_btn_clicked)
 		self.add_child(self.btn11)
 		self.btn12 = ui.Button(ui.Rect(xvals[1], yval, btn_w, btn_h), '12')
+		self.btn12.state = 'selected'
 		self.btn12.on_clicked.connect(self.tgl_btn_clicked)
 		self.add_child(self.btn12)
 		self.btn13 = ui.Button(ui.Rect(xvals[2], yval, btn_w, btn_h), '13')
