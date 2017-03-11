@@ -138,7 +138,7 @@ class SoundMenu(ui.Scene):
 			if data['type'] == 'set':
 				#GPIO.output(PINS[data['pin']], not data['active'])
 				print 'GPIO.output(PINS[%s])' % data['pin'], not data['active']
-		
+
 		# build off register for remaining sounds
 		register = self.build_reg_off(GameBoard.Boards[self.selected_game]['sounds'])
 		self.send_clk_bits(register, latch_pin, clk_pin, data_pin)
@@ -147,11 +147,11 @@ class SoundMenu(ui.Scene):
 		soundname = btn.text
 		ui.show_notification('%s Activated' % soundname)
 		sound = GameBoard.Boards[self.selected_game]['sounds'][soundname]
-		
+
 		latch_pin = GameBoard.Boards[self.selected_game]['latchpin']
 		clk_pin = GameBoard.Boards[self.selected_game]['clkpin']
 		data_pin = GameBoard.Boards[self.selected_game]['datapin']
-		
+
 		soundtype = sound['type']
 		if soundtype == 'set': # if sound type is set, only need to set single bit
 			#GPIO.output(PINS[sound['pin']], sound['active'])
@@ -165,7 +165,7 @@ class SoundMenu(ui.Scene):
 				register &= ~sound['pin'] # else set it to 0 to play
 			print soundname, '{0:b}'.format(register)
 			self.send_clk_bits(register, latch_pin, clk_pin, data_pin)
-	
+
 	# Builds a register setting each bit to off as appropriate considering its active state
 	def build_reg_off(self, sounds):
 		register = 0
@@ -175,26 +175,26 @@ class SoundMenu(ui.Scene):
 				if not data['active']: # if this sound is active low (False), set this bit to 1 to turn it off
 					register |= bits # bitwise OR with register
 				print name, '{0:b}'.format(register)
-		
+
 		return register
-		
+
 	# for each bit in register this sets data pin and sends clk pulse, then sends latch at end
 	def send_clk_bits(self, register, latch_pin, clk_pin, data_pin):
 		# set pins to False to start
 		#GPIO.output(PINS[latch_pin], False)
 		#GPIO.output(PINS[data_pin], False)
 		#GPIO.output(PINS[clk_pin], False) if self.selected_game != 'Tailgunner' else True
-		
+
 		# need to send bits in reverse order
 		# TODO need to change 8 to variable size register
 		reg_str = '{0:08b}'.format(register)  # store register as string to reverse it
 		for bit in reg_str[::-1]: # for each bit in reverse order
 			#GPIO.output(PINS[data_pin], bool(int(bit))) # set data pin to this bit
 			self.send_pulse(clk_pin) # pulse the clk pin
-		
+
 		if latch_pin:
 			self.send_pulse(latch_pin) # latch the register (only if latch_pin is set, e.g. tailgunner has no latch)
-			
+
 	def send_pulse(self, pin):
 		#GPIO.output(PINS[pin], True if self.selected_game != 'Tailgunner' else False)
 		print PINS[pin], True if self.selected_game != 'Tailgunner' else False
@@ -237,14 +237,27 @@ class AdvMenu(ui.Scene):
 		# toggle row
 		lbl = ui.Label(ui.Rect(10, 100, 70, btn_h), 'Toggle')
 		self.add_child(lbl)
-		for col in range(6):
-			pin = 11 + col
-			x = 90 + col * (btn_w + 5)
-			y = 100
+		xvals = [90, 155, 220, 285, 350, 415]
+		yval = 100
 
-			tgl_btn = ui.Button(ui.Rect(x, y, btn_w, btn_h), str(pin))
-			tgl_btn.on_clicked.connect(self.tgl_btn_clicked)
-			self.add_child(tgl_btn)
+		self.btn11 = ui.Button(ui.Rect(xvals[0], yval, btn_w, btn_h), '11')
+		self.btn11.on_clicked.connect(self.tgl_btn_clicked)
+		self.add_child(self.btn11)
+		self.btn12 = ui.Button(ui.Rect(xvals[1], yval, btn_w, btn_h), '12')
+		self.btn12.on_clicked.connect(self.tgl_btn_clicked)
+		self.add_child(self.btn12)
+		self.btn13 = ui.Button(ui.Rect(xvals[2], yval, btn_w, btn_h), '13')
+		self.btn13.on_clicked.connect(self.tgl_btn_clicked)
+		self.add_child(self.btn13)
+		self.btn14 = ui.Button(ui.Rect(xvals[3], yval, btn_w, btn_h), '14')
+		self.btn14.on_clicked.connect(self.tgl_btn_clicked)
+		self.add_child(self.btn14)
+		self.btn15 = ui.Button(ui.Rect(xvals[4], yval, btn_w, btn_h), '15')
+		self.btn15.on_clicked.connect(self.tgl_btn_clicked)
+		self.add_child(self.btn15)
+		self.btn16 = ui.Button(ui.Rect(xvals[5], yval, btn_w, btn_h), '16')
+		self.btn16.on_clicked.connect(self.tgl_btn_clicked)
+		self.add_child(self.btn16)
 
 		# pulse row
 		lbl = ui.Label(ui.Rect(10, (100 + btn_h + 30), 70, btn_h), 'Pulse')
@@ -265,17 +278,20 @@ class AdvMenu(ui.Scene):
 		adv_btn = ui.Button(ui.Rect(LCD_WIDTH - btn_w * 2, LCD_HEIGHT - btn_h, btn_w * 2, btn_h), '< Easy')
 		adv_btn.on_clicked.connect(self.adv_btn_clicked)
 		self.add_child(adv_btn)
-		
+
 		# set all pins to off (False)
 		for pin, state in self.toggle_state.items():
 			#GPIO.output(PINS[pin], state)
 			pass
 
 	def tgl_btn_clicked(self, btn, mbtn):
+		btns = {'11': self.btn11, '12': self.btn12, '13': self.btn13, '14': self.btn14, '15': self.btn15, '16': self.btn16}
 		pin = btn.text
 		new_state = not self.toggle_state[pin]
 		#GPIO.output(PINS[pin], new_state)
 		self.toggle_state[pin] = new_state
+		btns[pin].state = 'selected'
+		btns[pin].stylize()
 		logger.info('Toggle:' + btn.text)
 
 	def pls_btn_clicked(self, btn, mbtn):
