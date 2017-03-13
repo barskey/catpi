@@ -31,7 +31,7 @@ ROSounds = {
 	'Explsn':   {'type': 'set', 'active': False, 'pin': '16'},
 	'Laser':    {'type': 'set', 'active': False, 'pin': '15'},
 	'Torpedo':  {'type': 'set', 'active': False, 'pin': '14'},
-	'BG Speed': {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b111000},
+	'BG Speed': {'type': 'clk', 'reg': 1,  'active': True, 'pin': 0b111000},
 	'BG En.':   {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b000100},
 	'Beep':     {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b000010},
 	'Motor':    {'type': 'clk', 'reg': 1,  'active': False, 'pin': 0b000001}
