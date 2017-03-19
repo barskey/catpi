@@ -4,26 +4,26 @@ import time
 import resource
 import pygameui as ui
 import logging
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import gameboards
 
 # maps the schematic pins(J2 11-16) to GPIO pins
 PINS = {
-	'11': 22,
-	'12': 23,
-	'13': 27,
-	'14': 17,
-	'15': 18,
-	'16': 4
+	'11': 26,
+	'12': 19,
+	'13': 13,
+	'14': 6,
+	'15': 5,
+	'16': 12
 }
 
 # time to delay after setting bits
 DELAY = 0.001 # 0.001s = 1ms = 1KHz
 
-#Setup the GPIOs as outputs - only 4 and 17 are available
-#GPIO.setmode(GPIO.BCM)
-#for pin, gpio_port in PINS.items():
-#	GPIO.setup(gpio_port, GPIO.OUT)
+#Setup the GPIOs as outputs
+GPIO.setmode(GPIO.BCM)
+for pin, gpio_port in PINS.items():
+	GPIO.setup(gpio_port, GPIO.OUT)
 
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
@@ -94,24 +94,24 @@ def build_reg_off(sounds):
 # for each bit in register this sets data pin and sends clk pulse, then sends latch at end
 def send_clk_bits(register, latch_pin, clk_pin, data_pin, game):
 	# set pins to False to start
-	#GPIO.output(PINS[latch_pin], False)
-	#GPIO.output(PINS[data_pin], False)
-	#GPIO.output(PINS[clk_pin], False) if game != 'Tailgunner' else True
+	GPIO.output(PINS[latch_pin], False)
+	GPIO.output(PINS[data_pin], False)
+	GPIO.output(PINS[clk_pin], False) if game != 'Tailgunner' else True
 
 	# need to send bits in reverse order
 	# TODO need to change 8 to variable size register
 	reg_str = '{0:08b}'.format(register)  # store register as string to reverse it
 	for bit in reg_str[::-1]: # for each bit in reverse order
-		#GPIO.output(PINS[data_pin], bool(int(bit))) # set data pin to this bit
+		GPIO.output(PINS[data_pin], bool(int(bit))) # set data pin to this bit
 		send_pulse(clk_pin, game) # pulse the clk pin
 
 	if latch_pin:
 		send_pulse(latch_pin, game) # latch the register (only if latch_pin is set, e.g. tailgunner has no latch)
 
 def send_pulse(pin, game):
-	#GPIO.output(PINS[pin], True if game != 'Tailgunner' else False)
+	GPIO.output(PINS[pin], True if game != 'Tailgunner' else False)
 	time.sleep(DELAY)
-	#GPIO.output(PINS[pin], False if game != 'Tailgunner' else True)
+	GPIO.output(PINS[pin], False if game != 'Tailgunner' else True)
 	time.sleep(DELAY)
 
 class SoundMenu(ui.Scene):
@@ -171,7 +171,7 @@ class SoundMenu(ui.Scene):
 		# loop thru all sounds and set each one that is not clocked
 		for name, data in GameBoard.Boards[self.selected_game]['sounds'].items():
 			if data['type'] == 'set':
-				#GPIO.output(PINS[data['pin']], not data['active'])
+				GPIO.output(PINS[data['pin']], not data['active'])
 				print 'GPIO.output(PINS[%s])' % data['pin'], not data['active']
 
 		# build off-register for remaining sounds
@@ -188,7 +188,7 @@ class SoundMenu(ui.Scene):
 		data_pin = GameBoard.Boards[self.selected_game]['datapin']
 
 		if sound['type'] == 'set': # if sound type is set, only need to set single bit
-			#GPIO.output(PINS[sound['pin']], sound['active'])
+			GPIO.output(PINS[sound['pin']], sound['active'])
 			print 'GPIO.output(PINS[%s])' % sound['pin'], sound['active']
 		else: # else, need to loop through all clocked sounds and make register to load all at once
 			register = build_reg_off(GameBoard.Boards[self.selected_game]['sounds'])
@@ -269,7 +269,7 @@ class AdvMenu(ui.Scene):
 			pls_btn = ui.Button(ui.Rect(x, y, btn_w, btn_h), str(pin))
 			pls_btn.on_clicked.connect(self.pls_btn_clicked)
 			self.add_child(pls_btn)
-			
+
 		init_btn = ui.Button(ui.Rect(200, y_start + (btn_h + 100), 100, btn_h), 'Init')
 		init_btn.on_clicked.connect(self.init_clicked)
 		self.add_child(init_btn)
@@ -284,8 +284,7 @@ class AdvMenu(ui.Scene):
 
 		# set all pins to off (False)
 		for pin, state in self.toggle_state.items():
-			#GPIO.output(PINS[pin], state)
-			pass
+			GPIO.output(PINS[pin], state)
 
 	def tgl_btn_clicked(self, btn, mbtn):
 		pin = btn.text
@@ -294,18 +293,18 @@ class AdvMenu(ui.Scene):
 			self.tgl_btns[pin].state = 'selected'
 		else:
 			self.tgl_btns[pin].state = 'normal'
-		#GPIO.output(PINS[pin], new_state)
+		GPIO.output(PINS[pin], new_state)
 		self.toggle_state[pin] = new_state
 		logger.info('Toggle:' + btn.text)
 
 	def pls_btn_clicked(self, btn, mbtn):
 		pin = btn.text
-		#GPIO.output(PINS[pin], not self.toggle_state[pin])
+		GPIO.output(PINS[pin], not self.toggle_state[pin])
 		time.sleep(DELAY)
-		#GPIO.output(PINS[pin], self.toggle_state[pin])
+		GPIO.output(PINS[pin], self.toggle_state[pin])
 		time.sleep(DELAY)
 		logger.info('Pulse:' + btn.text)
-		
+
 	def init_clicked(self, btn, mbtn): # copy from init_board
 		ui.show_notification('%s Initialized' % self.selected_game)
 
@@ -317,7 +316,7 @@ class AdvMenu(ui.Scene):
 		for name, data in GameBoard.Boards[self.selected_game]['sounds'].items():
 			if data['type'] == 'set':
 				off_state = not data['active']
-				#GPIO.output(PINS[data['pin']], off_state)
+				GPIO.output(PINS[data['pin']], off_state)
 				self.toggle_state[data['pin']] = off_state
 				self.tgl_btns[data['pin']].state = 'selected' if off_state else 'normal'
 				print 'GPIO.output(PINS[%s])' % data['pin'], off_state
@@ -325,18 +324,18 @@ class AdvMenu(ui.Scene):
 		# build off-register for remaining sounds
 		register = build_reg_off(GameBoard.Boards[self.selected_game]['sounds'])
 		send_clk_bits(register, latch_pin, clk_pin, data_pin, self.selected_game)
-		
+
 		# turn off clocking bits as appropriate
 		if latch_pin:
-			#GPIO.output(PINS[latch_pin], False)
+			GPIO.output(PINS[latch_pin], False)
 			self.toggle_state[latch_pin] = False
 			self.tgl_btns[latch_pin].state = False
 		if clk_pin:
-			#GPIO.output(PINS[clk_pin], False if self.selected_game != 'Tailgunner' else True)
+			GPIO.output(PINS[clk_pin], False if self.selected_game != 'Tailgunner' else True)
 			self.toggle_state[clk_pin] = False if self.selected_game != 'Tailgunner' else True
 			self.tgl_btns[clk_pin].state = False if self.selected_game != 'Tailgunner' else True
 		if data_pin:
-			#GPIO.output(PINS[data_pin], False)
+			GPIO.output(PINS[data_pin], False)
 			self.toggle_state[data_pin] = False
 			self.tgl_btns[data_pin].state = False
 
